@@ -1,74 +1,93 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { View, Text, FlatList, StyleSheet } from "react-native";
+import EventItem from "@/components/EventItem";
 
 export default function HomeScreen() {
+  const matches = [
+    {
+      id: "1",
+      title: "Anticipated football clash between Gullyside FC Vs Ruaka FC",
+      date: "21 Feb 2025 - 4:00p.m",
+      location: "Township grounds, Kiambu Town",
+      image: require("@/assets/images/image 1.png"),
+      update: [
+        "Kick-off at 4:00p.m",
+        "Halftime: 0-0",
+        "John Kimani 78'",
+      ],
+      eventType: "football",
+    },
+    {
+      id: "2",
+      title: "Beautiful Wedding Ceremony: James & Anne",
+      date: "10 Mar 2025 - 12:00p.m",
+      location: "Serena Hotel, Nairobi",
+      image: require("@/assets/images/wedding-update.jpg"),
+      update: [
+        "Guests arriving",
+        "Ceremony started",
+        "Vows exchanged!",
+      ],
+      eventType: "wedding",
+    },
+    {
+      id: "3",
+      title: "Traditional Ruracio Ceremony",
+      date: "5 Apr 2025 - 10:00a.m",
+      location: "Nyeri County",
+      image: require("@/assets/images/image 1.png"),
+      update: [
+        "Family introductions",
+        "Bride price negotiation ongoing",
+      ],
+      eventType: "ruracio",
+    },
+    {
+      id: "4",
+      title: "Community Harambee Fundraiser",
+      date: "15 May 2025 - 2:00p.m",
+      location: "City Hall, Nairobi",
+      image: require("@/assets/images/image 1.png"),
+      update: [
+        "Opening remarks",
+        "Donations ongoing",
+        "Funds raised: Ksh 500,000",
+      ],
+      eventType: "harambee",
+    },
+  ];  
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View style={styles.container}>
+      {/* Text-based Logo */}
+      <Text style={styles.title}>⚽ Football Matches & Events</Text>
+      {/* Match List */}
+      <FlatList
+        data={matches}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <EventItem {...item} />}
+        showsVerticalScrollIndicator={true} 
+        contentContainerStyle={styles.listContainer} // Added spacing
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: "#121212",
+    padding: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#fff",
+    textAlign: "center",
+    marginBottom: 20,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  listContainer: {
+    paddingBottom: 20, // Adds spacing below the list
   },
 });
+
+
