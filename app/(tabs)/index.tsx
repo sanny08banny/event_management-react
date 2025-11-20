@@ -1,11 +1,20 @@
-import React, { useState, useMemo } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState, useMemo, useRef } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+  Easing,
+} from "react-native";
 import EventItem from "@/components/EventItem";
-import { Eye, EyeOff } from "lucide-react-native"; // Requires lucide-react-native installed
+import { Eye, EyeOff } from "lucide-react-native";
 import { parse } from "date-fns";
 
 export default function HomeScreen() {
   const [expanded, setExpanded] = useState(false);
+  const animation = useRef(new Animated.Value(0)).current;
   const matches = [
     {
       id: "1",
@@ -77,15 +86,33 @@ export default function HomeScreen() {
     return parsedMatches[0];
   }, [matches]);  
 
+  const toggleExpand = () => {
+    Animated.timing(animation, {
+      toValue: expanded ? 0 : 1,
+      duration: 300,
+      easing: Easing.ease,
+      useNativeDriver: false,
+    }).start();
+    setExpanded(!expanded);
+  };
+
+  // Interpolated height & opacity
+  const detailHeight = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 160], // Adjust max height if needed
+  });
+
+  const detailOpacity = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1],
+  });
+
   return (
     <View style={styles.container}>
-      {/* Inverted TopSheet */}
       <View style={styles.topSheet}>
         <View style={styles.topSheetHeader}>
-          <Text style={styles.topSheetTitle}>
-            {closestEvent.title}
-          </Text>
-          <TouchableOpacity onPress={() => setExpanded((prev) => !prev)}>
+          <Text style={styles.topSheetTitle}>{closestEvent.title}</Text>
+          <TouchableOpacity onPress={toggleExpand}>
             {expanded ? (
               <EyeOff color="#fff" size={24} />
             ) : (
@@ -93,19 +120,25 @@ export default function HomeScreen() {
             )}
           </TouchableOpacity>
         </View>
-        {expanded && (
-          <View style={styles.topSheetDetails}>
-            <Text style={styles.detailText}>📅 {closestEvent.date}</Text>
-            <Text style={styles.detailText}>📍 {closestEvent.location}</Text>
-            <Text style={styles.detailText}>📝 Updates:</Text>
-            {closestEvent.updates.map((u, idx) => (
-              <Text key={idx} style={styles.detailText}>• {u}</Text>
-            ))}
-          </View>
-        )}
+
+        {/* Collapsible Animated View */}
+        <Animated.View
+          style={[
+            styles.topSheetDetails,
+            { height: detailHeight, opacity: detailOpacity, overflow: "hidden" },
+          ]}
+        >
+          <Text style={styles.detailText}>📅 {closestEvent.date}</Text>
+          <Text style={styles.detailText}>📍 {closestEvent.location}</Text>
+          <Text style={styles.detailText}>📝 Updates:</Text>
+          {closestEvent.updates.map((u, idx) => (
+            <Text key={idx} style={styles.detailText}>
+              • {u}
+            </Text>
+          ))}
+        </Animated.View>
       </View>
 
-      {/* Events List */}
       <FlatList
         data={matches}
         keyExtractor={(item) => item.id}
